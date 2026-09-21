@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
-import backend.models.user  # noqa: F401  (a modell regisztrálása a Base-en)
-from backend.api import auth_router
-from backend.database.db import Base, engine
+import models.user  # noqa: F401  (a modell regisztrálása a Base-en)
+import auth_router
+from database.db import Base, engine
 
 
 @asynccontextmanager
@@ -27,4 +27,10 @@ def root():
 
 
 def run():
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+
+if __name__ == "__main__":
+    run()
+
+
+

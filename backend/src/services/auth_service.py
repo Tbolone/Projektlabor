@@ -3,7 +3,7 @@ import jwt
 import os
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
-from backend.repositories import user_repository
+from repositories import user_repository
 
 SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
 ALGORITHM = "HS256"
