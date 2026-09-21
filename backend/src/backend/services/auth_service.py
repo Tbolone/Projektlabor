@@ -1,10 +1,11 @@
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+import os
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 from backend.repositories import user_repository
 
-SECRET_KEY = "titkos_kulcs_a_jwt_tokenhez"
+SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
 ALGORITHM = "HS256"
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -20,7 +21,7 @@ def authenticate_user(db: Session, email: str, password: str):
         return None
         
     # 3. Token generálása
-    expire = datetime.utcnow() + timedelta(hours=24)
+    expire = datetime.now(timezone.utc) + timedelta(hours=24)
     token_data = {"sub": user.email, "exp": expire}
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
     
