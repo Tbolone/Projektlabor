@@ -1,5 +1,9 @@
 # Projektlabor
 
+Belsős dokumentáció:
+https://miro.com/app/board/uXjVHk9bYOE=/?share_link_id=327701502505
+
+
 Entitások:
 	- futár
 	- raktár
