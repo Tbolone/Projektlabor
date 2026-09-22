@@ -1,6 +1,7 @@
 import customtkinter as ctk
 from src.views.login import LoginView
 from src.views.home import HomeView
+from src.views.register import RegisterView
 
 class App(ctk.CTk):
     def __init__(self, view_classes):
@@ -29,5 +30,8 @@ class App(ctk.CTk):
         view = self.views[view_class]
         view.tkraise()
 
-app = App({"login": LoginView, "home": HomeView})
+app = App({"login": LoginView,
+           "home": HomeView,
+           "register": RegisterView})
+
 app.mainloop()
