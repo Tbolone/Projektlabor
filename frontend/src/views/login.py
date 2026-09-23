@@ -19,7 +19,7 @@ class LoginView(ctk.CTkFrame):
         self.email = ctk.CTkEntry(self, placeholder_text="Email", height=40)
         self.email.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
 
-        self.password = ctk.CTkEntry(self, placeholder_text="Password", height=40)
+        self.password = ctk.CTkEntry(self, placeholder_text="Password", height=40, show="*")
         self.password.grid(row=2, column=1, padx=10, pady=5, sticky="nsew")
 
         self.error_label = ctk.CTkLabel(self, text="", text_color="red")
@@ -44,12 +44,11 @@ class LoginView(ctk.CTkFrame):
         self.login_btn.configure(state="disabled", text="Bejelentkezés...")
         self.error_label.configure(text="")
 
-        success, message = self.api.login(email, password)
-
-        self.login_btn.configure(state="normal", text="Login")
-
-        if success:
-            self.controller.show_view("home")
-        else:
-            self.error_label.configure(text=message)
-
+        try:
+            success, message = self.api.login(email, password)
+            if success:
+                self.controller.show_view("home")
+            else:
+                self.error_label.configure(text=message)
+        finally:
+            self.login_btn.configure(state="normal", text="Login")

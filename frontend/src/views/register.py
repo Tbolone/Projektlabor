@@ -50,15 +50,17 @@ class RegisterView(ctk.CTkFrame):
         self.register_btn.configure(state="disabled", text="Regisztráció...")
         self.error_label.configure(text="")
 
-        success, message = self.register_controller.register(email, name, password, password_again)
+        try:
+            success, message = self.api.register(email, name, password, password_again)
 
-        self.register_btn.configure(state="normal", text="Register")
+            if success:
+                self.clear_fields()
+                self.controller.show_view("login")
+            else:
+                self.error_label.configure(text=message)
+        finally:
+            self.register_btn.configure(state="normal", text="Register")
 
-        if success:
-            self.clear_fields()
-            self.controller.show_view("login")
-        else:
-            self.error_label.configure(text=message)
 
     def clear_fields(self):
         self.name.delete(0, "end")
