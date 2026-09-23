@@ -3,6 +3,37 @@
 Belsős dokumentáció:
 https://miro.com/app/board/uXjVHk9bYOE=/?share_link_id=327701502505
 
+## Indítás
+
+Egy paranccsal elindul minden: frissülnek a függőségek, elindul az adatbázis,
+a backend, végül a frontend.
+
+**Windows (PowerShell):**
+
+```powershell
+.\start.ps1
+```
+
+**Linux / macOS:**
+
+```bash
+./start.sh
+```
+
+Kapcsolók:
+
+| Windows         | Linux / macOS     | Mit csinál                                        |
+|-----------------|-------------------|---------------------------------------------------|
+| `-Fresh`        | `--fresh`         | minden függőséget újratelepít nulláról            |
+| `-NoDocker`     | `--no-docker`     | Docker helyett helyi SQLite adatbázist használ    |
+| `-BackendOnly`  | `--backend-only`  | csak a backendet indítja, frontend nélkül         |
+
+Előfeltétel: [uv](https://docs.astral.sh/uv/) és futó Docker (az utóbbi
+elhagyható a `--no-docker` kapcsolóval). A szkript kilépéskor leállítja a
+backendet; az adatbázist a `docker compose down` állítja le.
+
+A frontend bezárásával az egész leáll. A backend naplója a `.logs/` mappába kerül.
+
 
 Entitások:
 	- futár

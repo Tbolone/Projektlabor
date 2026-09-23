@@ -1,7 +1,20 @@
-import customtkinter as ctk
-from src.views.login import LoginView
-from src.views.home import HomeView
-from src.views.register import RegisterView
+import sys
+
+try:
+    import customtkinter as ctk
+    from src.views.login import LoginView
+    from src.views.home import HomeView
+    from src.views.register import RegisterView
+except ModuleNotFoundError as error:
+    sys.exit(
+        f"Hiányzó csomag: {error.name}\n\n"
+        "A frontendet a saját környezetéből kell indítani, a frontend mappából:\n"
+        "    uv run python main.py\n\n"
+        "Vagy a repo gyökeréből az indítószkripttel:\n"
+        "    .\\start.ps1      (Windows)\n"
+        "    ./start.sh       (Linux / macOS)\n\n"
+        f"A most futó Python: {sys.executable}"
+    )
 
 class App(ctk.CTk):
     def __init__(self, view_classes):
