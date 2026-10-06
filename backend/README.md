@@ -13,7 +13,11 @@ A teljes rendszert (adatbázis + backend + frontend) a repo gyökerében lévő
    docker compose up -d postgres_db
    ```
 
-2. Backend indítása (a `backend` mappából):
+2. Adatbázis migrációk futtatása
+   uv run alembic upgrade head
+   (migráció létrehozása: uv run alembic revision --autogenerate -m "{migration_name}")
+
+3. Backend indítása (a `backend` mappából):
 
    ```bash
    uv run uvicorn main:app --app-dir src --reload

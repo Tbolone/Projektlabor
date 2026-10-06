@@ -8,14 +8,8 @@ import auth_router
 from database.db import Base, engine
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Táblák létrehozása induláskor
-    Base.metadata.create_all(bind=engine)
-    yield
 
-
-app = FastAPI(title="Projekt Backend API", lifespan=lifespan)
+app = FastAPI(title="Projekt Backend API")
 
 # Routerek becsatolása
 app.include_router(auth_router.router)
