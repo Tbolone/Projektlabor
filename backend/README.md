@@ -20,7 +20,7 @@ A teljes rendszert (adatbázis + backend + frontend) a repo gyökerében lévő
 3. Backend indítása (a `backend` mappából):
 
    ```bash
-   uv run uvicorn main:app --app-dir src --reload
+   uv run uvicorn src.main:app --reload
    ```
 
    Az API a http://127.0.0.1:8000 címen fut, a Swagger dokumentáció a
@@ -45,10 +45,10 @@ onnan olvassák ki őket.
 
 ## Szerkezet
 
-A forrás a `src/` alatt lapos modulokban van (`main.py`, `auth_router.py`,
-`database/`, `models/`, `repositories/`, `schemas/`, `services/`). A projekt nem
-települ csomagként (`[tool.uv] package = false`), ezért az indításnál kell a
-`--app-dir src` kapcsoló.
+A forrás a `src/` csomag alatt van (`main.py`, `auth_router.py`, `database/`,
+`models/`, `repositories/`, `schemas/`, `services/`). A modulok egymást `src.`
+előtaggal importálják (pl. `from src.database.db import Base`), ezért a backendet
+a `backend` mappából, `src.main:app` néven kell indítani.
 
 ## Végpontok
 
