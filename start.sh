@@ -44,6 +44,12 @@ ok()   { printf "    ${C_GREEN}%s${C_OFF}\n" "$1"; }
 warn() { printf "    ${C_YELLOW}%s${C_OFF}\n" "$1"; }
 err()  { printf "${C_RED}%s${C_OFF}\n" "$1" >&2; }
 
+# Igaz, ha a megadott porton figyel valami a gepen.
+port_in_use() {
+    (exec 3<>"/dev/tcp/127.0.0.1/$1") 2>/dev/null && exec 3<&- && return 0
+    return 1
+}
+
 # --- uv megkeresese ---------------------------------------------------------
 # A uv lehet a PATH-ban, vagy csak egy Python modulkent telepitve.
 UV=()
@@ -146,23 +152,29 @@ if [ "$NO_DOCKER" -eq 0 ]; then
 fi
 
 if [ "$USE_DOCKER" -eq 1 ]; then
-    step "Postgres adatbazis inditasa..."
-    (cd "$ROOT" && docker compose up -d postgres_db)
+    if port_in_use 5432; then
+        # Mar fut egy adatbazis a porton (pl. a projekt egy masik masolatabol
+        # inditva), azt hasznaljuk. Igy nem utkozik a konteneri nev sem.
+        step "Az 5432-es porton mar fut egy adatbazis, azt hasznaljuk."
+    else
+        step "Postgres adatbazis inditasa..."
+        (cd "$ROOT" && docker compose up -d postgres_db)
 
-    step "Varakozas az adatbazisra..."
-    READY=0
-    for _ in $(seq 1 30); do
-        if (cd "$ROOT" && docker compose exec -T postgres_db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1); then
-            READY=1
-            break
+        step "Varakozas az adatbazisra..."
+        READY=0
+        for _ in $(seq 1 30); do
+            if (cd "$ROOT" && docker compose exec -T postgres_db pg_isready -U "$PG_USER" -d "$PG_DB" >/dev/null 2>&1); then
+                READY=1
+                break
+            fi
+            sleep 2
+        done
+        if [ "$READY" -eq 0 ]; then
+            err "Az adatbazis nem valaszolt idoben."
+            exit 1
         fi
-        sleep 2
-    done
-    if [ "$READY" -eq 0 ]; then
-        err "Az adatbazis nem valaszolt idoben."
-        exit 1
+        ok "Az adatbazis keszen all."
     fi
-    ok "Az adatbazis keszen all."
 
     export DATABASE_URL="postgresql://${PG_USER}:${PG_PASS}@localhost:5432/${PG_DB}"
 else
@@ -174,13 +186,13 @@ if [ -n "$SECRET" ]; then
     export SECRET_KEY="$SECRET"
 fi
 
-# --- 4. Backend -------------------------------------------------------------
-port_in_use() {
-    (exec 3<>"/dev/tcp/127.0.0.1/8000") 2>/dev/null && exec 3<&- && return 0
-    return 1
-}
+# --- 3/b. Adatbazis migraciok ----------------------------------------------
+step "Adatbazis migraciok futtatasa..."
+(cd "$BACKEND_DIR" && "${UV[@]}" run alembic upgrade head)
+ok "A sema naprakesz."
 
-if port_in_use; then
+# --- 4. Backend -------------------------------------------------------------
+if port_in_use 8000; then
     step "A 8000-es porton mar fut valami, a backend inditasa kimarad."
 else
     step "Backend inditasa..."
@@ -189,8 +201,8 @@ else
         cd "$BACKEND_DIR"
         # sajat folyamatcsoport, hogy a leallitas a gyerekeket is elerje
         set -m
-        exec "${UV[@]}" run uvicorn main:app \
-            --app-dir src --host 127.0.0.1 --port 8000 --reload
+        exec "${UV[@]}" run uvicorn src.main:app \
+            --host 127.0.0.1 --port 8000 --reload
     ) > "$BACKEND_LOG" 2>&1 &
     BACKEND_PID=$!
 

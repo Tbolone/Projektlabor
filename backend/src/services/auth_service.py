@@ -4,8 +4,8 @@ import os
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from models.user import User
-from repositories import user_repository
+from src.models.models import User
+from src.repositories import user_repository
 
 SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
 ALGORITHM = "HS256"
@@ -37,7 +37,9 @@ def authenticate_user(db: Session, email: str, password: str):
     user = user_repository.get_user_by_email(db, email)
     
     # 2. Ellenőrizzük a jelszót
-    if not user or not verify_password(password, user.password_hash):
+    # A password_hash üres a nem regisztrált (vendég) felhasználóknál,
+    # ők nem tudnak belépni.
+    if not user or not user.password_hash or not verify_password(password, user.password_hash):
         return None
         
     # 3. Token generálása
