@@ -199,31 +199,37 @@ if (-not $NoDocker) {
 }
 
 if ($useDocker) {
-    Write-Step 'Postgres adatbazis inditasa...'
-    Push-Location $root
-    try {
-        & docker compose up -d postgres_db
-        if ($LASTEXITCODE -ne 0) { throw 'Nem sikerult elinditani az adatbazist.' }
-    } finally {
-        Pop-Location
-    }
-
-    Write-Step 'Varakozas az adatbazisra...'
-    $ready = $false
-    Push-Location $root
-    try {
-        foreach ($i in 1..30) {
-            $probe = Invoke-Quiet -FilePath 'docker' -Arguments @(
-                'compose', 'exec', '-T', 'postgres_db',
-                'pg_isready', '-U', $pgUser, '-d', $pgDb)
-            if ($probe -eq 0) { $ready = $true; break }
-            Start-Sleep -Seconds 2
+    if (Test-Port -Port 5432) {
+        # Mar fut egy adatbazis a porton (pl. a projekt egy masik masolatabol
+        # inditva), azt hasznaljuk. Igy nem utkozik a konteneri nev sem.
+        Write-Step 'Az 5432-es porton mar fut egy adatbazis, azt hasznaljuk.'
+    } else {
+        Write-Step 'Postgres adatbazis inditasa...'
+        Push-Location $root
+        try {
+            & docker compose up -d postgres_db
+            if ($LASTEXITCODE -ne 0) { throw 'Nem sikerult elinditani az adatbazist.' }
+        } finally {
+            Pop-Location
         }
-    } finally {
-        Pop-Location
+
+        Write-Step 'Varakozas az adatbazisra...'
+        $ready = $false
+        Push-Location $root
+        try {
+            foreach ($i in 1..30) {
+                $probe = Invoke-Quiet -FilePath 'docker' -Arguments @(
+                    'compose', 'exec', '-T', 'postgres_db',
+                    'pg_isready', '-U', $pgUser, '-d', $pgDb)
+                if ($probe -eq 0) { $ready = $true; break }
+                Start-Sleep -Seconds 2
+            }
+        } finally {
+            Pop-Location
+        }
+        if (-not $ready) { throw 'Az adatbazis nem valaszolt idoben.' }
+        Write-Ok 'Az adatbazis keszen all.'
     }
-    if (-not $ready) { throw 'Az adatbazis nem valaszolt idoben.' }
-    Write-Ok 'Az adatbazis keszen all.'
 
     $env:DATABASE_URL = "postgresql://${pgUser}:${pgPass}@localhost:5432/${pgDb}"
 } else {
@@ -234,6 +240,11 @@ if ($useDocker) {
 
 if ($envValues['SECRET_KEY']) { $env:SECRET_KEY = $envValues['SECRET_KEY'] }
 
+# --- 3/b. Adatbazis migraciok ----------------------------------------------
+Write-Step 'Adatbazis migraciok futtatasa...'
+Invoke-Uv -WorkDir $backendDir -UvArgs @('run', 'alembic', 'upgrade', 'head')
+Write-Ok 'A sema naprakesz.'
+
 # --- 4. Backend -------------------------------------------------------------
 try {
     if (Test-Port -Port 8000) {
@@ -243,8 +254,7 @@ try {
         if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
 
         $uvicornArgs = $script:UvPrefix + @(
-            'run', 'uvicorn', 'main:app',
-            '--app-dir', 'src',
+            'run', 'uvicorn', 'src.main:app',
             '--host', '127.0.0.1',
             '--port', '8000',
             '--reload'

@@ -38,7 +38,9 @@ def authenticate_user(db: Session, email: str, password: str):
     user = db.query(User).filter(User.email == email).first()
     
     # 2. Ellenőrizzük a jelszót
-    if not user or not verify_password(password, user.password_hash):
+    # A password_hash üres a nem regisztrált (vendég) felhasználóknál,
+    # ők nem tudnak belépni.
+    if not user or not user.password_hash or not verify_password(password, user.password_hash):
         return None
         
     # 3. Token generálása
