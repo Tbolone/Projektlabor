@@ -1,14 +1,12 @@
 import bcrypt
 import jwt
-import os
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 from models.models import User
 from repositories import user_repository
+from deps import SECRET_KEY, ALGORITHM
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
-ALGORITHM = "HS256"
 
 class EmailAlreadyUsedError(Exception):
     """Akkor dobjuk, ha a megadott email címmel már létezik felhasználó."""

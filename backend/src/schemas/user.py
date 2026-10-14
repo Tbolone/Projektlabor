@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
-from src.models.models import UserType
+from models.models import UserType
 
 
 class UserResponse(BaseModel):
