@@ -4,7 +4,7 @@ import os
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from models.user import User
+from models.models import User
 from repositories import user_repository
 
 SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
@@ -30,11 +30,12 @@ def register_user(db: Session, email: str, name: str, password: str) -> User:
         # Ha két regisztráció fut egyszerre, az adatbázis unique megszorítása fog.
         db.rollback()
         raise EmailAlreadyUsedError()
+        
 
 def authenticate_user(db: Session, email: str, password: str):
     """Ellenőrzi a jelszót és tokent generál, ha sikeres."""
     # 1. Lekérdezzük a repository-ból a usert
-    user = user_repository.get_user_by_email(db, email)
+    user = db.query(User).filter(User.email == email).first()
     
     # 2. Ellenőrizzük a jelszót
     if not user or not verify_password(password, user.password_hash):

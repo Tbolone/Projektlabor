@@ -35,3 +35,5 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
         )
 
     return user
+
+

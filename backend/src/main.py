@@ -3,8 +3,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 
-import models.user  # noqa: F401  (a modell regisztrálása a Base-en)
-import auth_router
+import auth_router, user_router
 from database.db import Base, engine
 
 
@@ -13,6 +12,7 @@ app = FastAPI(title="Projekt Backend API")
 
 # Routerek becsatolása
 app.include_router(auth_router.router)
+app.include_router(user_router.router)
 
 
 @app.get("/")
