@@ -1,13 +1,16 @@
 import uvicorn
 from fastapi import FastAPI
 
-from src.models import models  # noqa: F401  (a modellek regisztrálása a Base-en)
-from src import auth_router
+import auth_router, user_router
+from database.db import Base, engine
+
+
 
 app = FastAPI(title="Projekt Backend API")
 
 # Routerek becsatolása
 app.include_router(auth_router.router)
+app.include_router(user_router.router)
 
 @app.get("/")
 def root():

@@ -1,14 +1,12 @@
 import bcrypt
 import jwt
-import os
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from src.models.models import User
-from src.repositories import user_repository
+from models.models import User
+from repositories import user_repository
+from deps import SECRET_KEY, ALGORITHM
 
-SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
-ALGORITHM = "HS256"
 
 class EmailAlreadyUsedError(Exception):
     """Akkor dobjuk, ha a megadott email címmel már létezik felhasználó."""
@@ -30,11 +28,12 @@ def register_user(db: Session, email: str, name: str, password: str) -> User:
         # Ha két regisztráció fut egyszerre, az adatbázis unique megszorítása fog.
         db.rollback()
         raise EmailAlreadyUsedError()
+        
 
 def authenticate_user(db: Session, email: str, password: str):
     """Ellenőrzi a jelszót és tokent generál, ha sikeres."""
     # 1. Lekérdezzük a repository-ból a usert
-    user = user_repository.get_user_by_email(db, email)
+    user = db.query(User).filter(User.email == email).first()
     
     # 2. Ellenőrizzük a jelszót
     # A password_hash üres a nem regisztrált (vendég) felhasználóknál,

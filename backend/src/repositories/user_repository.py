@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models.models import User, UserType
+from models.models import User, UserType
 
 def get_user_by_email(db: Session, email: str) -> User | None:
     """Kikeresi a felhasználót az adatbázisból email alapján."""
