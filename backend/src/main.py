@@ -1,8 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 
-import auth_router, user_router
-from database.db import Base, engine
+from src import auth_router, user_router
+from src.database.db import Base, engine
 
 
 

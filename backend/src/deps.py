@@ -5,8 +5,8 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 import os
 
-from database.db import get_db
-from models.models import User
+from src.database.db import get_db
+from src.models.models import User
 
 
 SECRET_KEY = os.getenv("SECRET_KEY", "fejlesztoi_titkos_kulcs_a_jwt_tokenhez_valtoztasd_meg")
