@@ -212,7 +212,7 @@ else
         if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
             break
         fi
-        if port_in_use; then
+        if port_in_use 8000; then
             UP=1
             break
         fi
