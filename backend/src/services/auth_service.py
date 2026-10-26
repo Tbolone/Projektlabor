@@ -3,9 +3,9 @@ import jwt
 from datetime import datetime, timedelta, timezone
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from models.models import User
-from repositories import user_repository
-from deps import SECRET_KEY, ALGORITHM
+from src.models.models import User
+from src.repositories import user_repository
+from src.deps import SECRET_KEY, ALGORITHM
 
 
 class EmailAlreadyUsedError(Exception):
