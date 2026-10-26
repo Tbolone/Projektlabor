@@ -94,3 +94,22 @@ class AuthAPI(BaseAPI):
 
         return f"Szerver hiba ({status_code})."
     
+    def get_current_user(self) -> tuple[bool, dict | str]:
+        if not getattr(self, "token", None):
+            return False, "Nincs bejelentkezett felhasználó."
+
+        try:
+            response = self.client.get("/api/auth/current_user")
+            response.raise_for_status()
+            return True, response.json()
+
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code in (401, 403):
+                self.token = None
+                self.client.headers.pop("Authorization", None)
+                return False, "A bejelentkezés lejárt. Jelentkezz be újra."
+
+            return False, self._handle_status_error(e)
+
+        except httpx.RequestError:
+            return False, "Nem sikerült csatlakozni a szerverhez."

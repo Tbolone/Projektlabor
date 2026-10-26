@@ -1,4 +1,5 @@
 from pydantic import BaseModel, EmailStr, Field
+from src.models.models import UserType
 
 class LoginRequest(BaseModel):
     email: EmailStr
@@ -18,5 +19,6 @@ class UserResponse(BaseModel):
     user_id: int
     email: EmailStr
     name: str
+    type: UserType
 
     model_config = {"from_attributes": True}

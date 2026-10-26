@@ -5,6 +5,7 @@ try:
     from src.views.login import LoginView
     from src.views.home import HomeView
     from src.views.register import RegisterView
+    from src.views.registered_customer import RegisteredCustomerView
 except ModuleNotFoundError as error:
     sys.exit(
         f"Hiányzó csomag: {error.name}\n\n"
@@ -45,6 +46,7 @@ class App(ctk.CTk):
 
 app = App({"login": LoginView,
            "home": HomeView,
-           "register": RegisterView})
+           "register": RegisterView,
+           "registered_customer": RegisteredCustomerView})
 
 app.mainloop()
