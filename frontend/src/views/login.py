@@ -47,7 +47,12 @@ class LoginView(ctk.CTkFrame):
         try:
             success, message = self.api.login(email, password)
             if success:
-                self.controller.show_view("home")
+                success, data = self.api.get_current_user()
+                if success:
+                    if data["type"] == "registered customer":
+                        self.controller.show_view("registered_customer")
+                else:
+                    self.controller.show_view("home")
             else:
                 self.error_label.configure(text=message)
         finally:

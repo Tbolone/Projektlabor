@@ -3,6 +3,10 @@ from sqlalchemy.orm import Session
 from src.database.db import get_db
 from src.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
 from src.services import auth_service
+from typing import Annotated
+from fastapi import Depends
+from src.deps import get_current_user
+from src.models.models import User
 
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
@@ -36,4 +40,9 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 
     return user
 
+@router.get("/current_user", response_model=UserResponse)
+def get_current_user(
+    current_user: Annotated[User, Depends(get_current_user)]
+):
+    return current_user
 
