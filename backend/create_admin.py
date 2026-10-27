@@ -1,4 +1,3 @@
-
 from getpass import getpass
 
 from sqlalchemy.exc import IntegrityError

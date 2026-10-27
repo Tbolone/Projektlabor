@@ -34,6 +34,34 @@ backendet; az adatbázist a `docker compose down` állítja le.
 
 A frontend bezárásával az egész leáll. A backend naplója a `.logs/` mappába kerül.
 
+## Demó adatok és belépések
+
+Az első indítás után töltsd fel a rendszert demó adatokkal (a `backend` mappából):
+
+```bash
+uv run python seed_demo.py
+```
+
+Ez létrehozza az alábbi belépéseket, két futárt és tíz csomagot az életút minden
+szakaszából. A `--reset` kapcsolóval a korábbi demó csomagok törölhetők és
+újratölthetők.
+
+| Szerepkör          | E-mail              | Jelszó    | Felület                   |
+|--------------------|---------------------|-----------|---------------------------|
+| Adminisztrátor     | `admin@test.hu`     | `admin`   | Admin felület             |
+| Futár              | `futar@test.hu`     | `futar`   | Futár felület             |
+| Futár (második)    | `futar2@test.hu`    | `futar`   | Futár felület             |
+| Regisztrált ügyfél | `reguser@reguser.hu`| `reguser` | Ügyfél felület            |
+
+A bejelentkezés után a szerepkör dönti el, melyik felület nyílik meg.
+
+## Dokumentáció
+
+Az adminisztrátori és a futár felület részletes, gombonkénti leírása külön Word
+dokumentumban készült el (nem a repóban tárolva).
+
+Az API interaktív dokumentációja futó backend mellett: http://127.0.0.1:8000/docs
+
 
 Entitások:
 	- futár

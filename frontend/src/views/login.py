@@ -1,6 +1,13 @@
 import customtkinter as ctk
 from src.api.auth_api import AuthAPI
 
+VIEW_BY_USER_TYPE = {
+    "admin": "admin",
+    "delivery_man": "courier",
+    "registered customer": "registered_customer",
+}
+
+
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
@@ -14,7 +21,7 @@ class LoginView(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
-        
+
 
         self.email = ctk.CTkEntry(self, placeholder_text="Email", height=40)
         self.email.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
@@ -46,14 +53,22 @@ class LoginView(ctk.CTkFrame):
 
         try:
             success, message = self.api.login(email, password)
-            if success:
-                success, data = self.api.get_current_user()
-                if success:
-                    if data["type"] == "registered customer":
-                        self.controller.show_view("registered_customer")
-                else:
-                    self.controller.show_view("home")
-            else:
+            if not success:
                 self.error_label.configure(text=message)
+                return
+
+            success, data = self.api.get_current_user()
+            if not success:
+                self.error_label.configure(text=str(data))
+                return
+
+            view = VIEW_BY_USER_TYPE.get(data["type"], "home")
+            self._clear_fields()
+            self.controller.show_view(view)
         finally:
             self.login_btn.configure(state="normal", text="Login")
+
+    def _clear_fields(self):
+        self.email.delete(0, "end")
+        self.password.delete(0, "end")
+        self.error_label.configure(text="")

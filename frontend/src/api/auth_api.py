@@ -26,9 +26,7 @@ class AuthAPI(BaseAPI):
             response.raise_for_status()
             data = response.json()
 
-            self.token = data.get("access_token")
-            if self.token:
-                self.client.headers["Authorization"] = f"Bearer {self.token}"
+            self.set_token(data.get("access_token"))
 
             return True, ""
 
@@ -93,7 +91,7 @@ class AuthAPI(BaseAPI):
             return "Érvénytelen adat."
 
         return f"Szerver hiba ({status_code})."
-    
+
     def get_current_user(self) -> tuple[bool, dict | str]:
         if not getattr(self, "token", None):
             return False, "Nincs bejelentkezett felhasználó."
@@ -105,8 +103,7 @@ class AuthAPI(BaseAPI):
 
         except httpx.HTTPStatusError as e:
             if e.response.status_code in (401, 403):
-                self.token = None
-                self.client.headers.pop("Authorization", None)
+                self.logout()
                 return False, "A bejelentkezés lejárt. Jelentkezz be újra."
 
             return False, self._handle_status_error(e)

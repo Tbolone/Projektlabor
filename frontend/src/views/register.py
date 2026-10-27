@@ -1,4 +1,3 @@
-# views/register.py
 import customtkinter as ctk
 from src.api import auth_api
 

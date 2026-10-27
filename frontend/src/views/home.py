@@ -1,4 +1,3 @@
-# views/home.py
 import customtkinter as ctk
 
 class HomeView(ctk.CTkFrame):

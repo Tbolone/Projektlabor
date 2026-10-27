@@ -93,6 +93,19 @@ class Package(Base):
         default=PackageStatus.CREATED,
     )
 
+    pickup_courier_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("couriers.id"), nullable=True, index=True
+    )
+    delivery_courier_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("couriers.id"), nullable=True, index=True
+    )
+
+    pickup_courier: Mapped[Optional["Courier"]] = relationship(
+        "Courier", foreign_keys=[pickup_courier_id]
+    )
+    delivery_courier: Mapped[Optional["Courier"]] = relationship(
+        "Courier", foreign_keys=[delivery_courier_id]
+    )
 
     pickup_contact: Mapped["Contact"] = relationship(
         "Contact", foreign_keys=[pickup_contact_id]
@@ -177,3 +190,11 @@ class Courier(Base):
 
     user: Mapped["User"] = relationship("User", foreign_keys=[user_id])
     events: Mapped[list["PackageEvent"]] = relationship("PackageEvent", back_populates="courier")
+
+    @property
+    def name(self) -> str:
+        return self.user.name if self.user else ""
+
+    @property
+    def email(self) -> str:
+        return self.user.email if self.user else ""

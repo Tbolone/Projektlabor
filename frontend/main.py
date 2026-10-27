@@ -6,6 +6,8 @@ try:
     from src.views.home import HomeView
     from src.views.register import RegisterView
     from src.views.registered_customer import RegisteredCustomerView
+    from src.views.admin import AdminView
+    from src.views.courier import CourierView
 except ModuleNotFoundError as error:
     sys.exit(
         f"Hiányzó csomag: {error.name}\n\n"
@@ -22,15 +24,14 @@ class App(ctk.CTk):
         super().__init__()
 
         self.title("Pagyar Mosta Zrt.")
-        self.geometry("1000x500")
+        self.geometry("1400x800")
+        self.minsize(1180, 640)
 
-        # Set up main frame as a container for views
         self.container = ctk.CTkFrame(self)
         self.container.pack(fill="both", expand="True")
         self.container.grid_columnconfigure(0, weight=1)
         self.container.grid_rowconfigure(0, weight=1)
 
-        # Initialize views and load Login page
         self.views = {}
         for key, view_class in view_classes.items():
             view = view_class(self.container, self)
@@ -44,9 +45,15 @@ class App(ctk.CTk):
         view = self.views[view_class]
         view.tkraise()
 
+        on_show = getattr(view, "on_show", None)
+        if callable(on_show):
+            on_show()
+
 app = App({"login": LoginView,
            "home": HomeView,
            "register": RegisterView,
-           "registered_customer": RegisteredCustomerView})
+           "registered_customer": RegisteredCustomerView,
+           "admin": AdminView,
+           "courier": CourierView})
 
 app.mainloop()

@@ -12,8 +12,6 @@ router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
-    """A frontend ide küldi a kérést."""
-    # A Router csak továbbítja az adatokat a Service-nek
     token = auth_service.authenticate_user(db, request.email, request.password)
 
     if not token:
@@ -22,12 +20,10 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
             detail="Hibás email vagy jelszó"
         )
 
-    # A Router visszaküldi a választ a frontendnek
     return TokenResponse(access_token=token)
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
-    """Új felhasználó regisztrálása."""
     try:
         user = auth_service.register_user(
             db, request.email, request.name, request.password
@@ -45,4 +41,3 @@ def get_current_user(
     current_user: Annotated[User, Depends(get_current_user)]
 ):
     return current_user
-
