@@ -9,6 +9,8 @@ try:
     from src.views.create_order import CreateOrderView
     from src.views.registered_customer import RegisteredCustomerView
     from src.views.modify_user import ModifyUserView
+    from src.views.admin import AdminView
+    from src.views.courier import CourierView
 except ModuleNotFoundError as error:
     sys.exit(
         f"Hiányzó csomag: {error.name}\n\n"
@@ -47,12 +49,19 @@ class App(ctk.CTk):
         view = self.views[view_class]
         view.tkraise()
 
+        # A nézet frissítheti magát, amikor előtérbe kerül (pl. adatok letöltése)
+        on_show = getattr(view, "on_show", None)
+        if callable(on_show):
+            on_show()
+
 app = App({"login": LoginView,
            "home": HomeView,
            "register": RegisterView,
            "main_layout": MainLayoutView,
            "registered_customer": RegisteredCustomerView,
-           "create_order": CreateOrderView
+           "create_order": CreateOrderView,
+           "admin": AdminView,
+           "courier": CourierView
            })
 
 app.mainloop()

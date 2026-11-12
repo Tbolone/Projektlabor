@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-import auth_router, user_router
+import admin_router, auth_router, courier_router, user_router
 from database.db import Base, engine
 from order_router import router as order_router
 
@@ -12,6 +12,8 @@ app = FastAPI(title="Projekt Backend API")
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(order_router)
+app.include_router(courier_router.router)
+app.include_router(admin_router.router)
 
 @app.get("/")
 def root():

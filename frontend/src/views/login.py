@@ -2,6 +2,14 @@
 import customtkinter as ctk
 from src.api.session import auth_api
 
+# Melyik szerepkör melyik felületre lép be. A kulcsok a backend UserType
+# értékei, pontosan úgy, ahogy az API visszaadja őket.
+VIEW_BY_USER_TYPE = {
+    "admin": "admin",
+    "delivery_man": "courier",
+    "registered customer": "main_layout",
+}
+
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
@@ -53,14 +61,17 @@ class LoginView(ctk.CTkFrame):
 
         try:
             success, message = self.api.login(email, password)
-            if success:
-                success, data = self.api.get_current_user()
-                if success:
-                    if data["type"] == "registered customer":
-                        self.controller.show_view("main_layout")
-                else:
-                    self.controller.show_view("home")
-            else:
+            if not success:
                 self.error_label.configure(text=message)
+                return
+
+            success, data = self.api.get_current_user()
+            if not success:
+                self.error_label.configure(text=str(data))
+                return
+
+            # A szerepkör dönti el, melyik felület nyílik meg
+            self.clear_fields()
+            self.controller.show_view(VIEW_BY_USER_TYPE.get(data["type"], "home"))
         finally:
             self.login_btn.configure(state="normal", text="Login")

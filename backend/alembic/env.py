@@ -2,7 +2,7 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'src')))
 
 from database.db import Base
 from models import models
@@ -33,6 +33,12 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
+# Az inditoszkriptek es a Docker a DATABASE_URL-t allitjak be; az alembic.ini-ben
+# levo ertek csak akkor ervenyes, ha nincs ilyen kornyezeti valtozo.
+_database_url = os.getenv("DATABASE_URL")
+if _database_url:
+    config.set_main_option("sqlalchemy.url", _database_url)
 
 # Az indítószkriptek és a Docker a DATABASE_URL-t állítják be, az alembic.ini-ben
 # lévő érték csak akkor érvényes, ha nincs ilyen környezeti változó.

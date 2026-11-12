@@ -254,7 +254,8 @@ try {
         if (-not (Test-Path $logDir)) { New-Item -ItemType Directory -Path $logDir | Out-Null }
 
         $uvicornArgs = $script:UvPrefix + @(
-            'run', 'uvicorn', 'src.main:app',
+            'run', 'uvicorn', 'main:app',
+            '--app-dir', 'src',
             '--host', '127.0.0.1',
             '--port', '8000',
             '--reload'

@@ -201,7 +201,7 @@ else
         cd "$BACKEND_DIR"
         # sajat folyamatcsoport, hogy a leallitas a gyerekeket is elerje
         set -m
-        exec "${UV[@]}" run uvicorn src.main:app \
+        exec "${UV[@]}" run uvicorn main:app --app-dir src \
             --host 127.0.0.1 --port 8000 --reload
     ) > "$BACKEND_LOG" 2>&1 &
     BACKEND_PID=$!
