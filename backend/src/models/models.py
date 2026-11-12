@@ -50,6 +50,7 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     email: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
     password_hash: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    primary_address: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
 
     type: Mapped[UserType] = mapped_column(
         Enum(UserType, name="user_type_enum"),

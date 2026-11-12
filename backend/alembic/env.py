@@ -4,8 +4,8 @@ import sys
 
 sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..')))
 
-from database.db import Base      
-import models.models
+from database.db import Base
+from models import models
 
 
 from logging.config import fileConfig
