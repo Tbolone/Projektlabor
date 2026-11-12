@@ -1,5 +1,5 @@
-from backend.src.models.models import User
-from backend.src.schemas.user import PasswordChangeRequest, UserProfileResponse, UserProfileUpdateRequest
+from models.models import User
+from schemas.user import PasswordChangeRequest, UserProfileResponse, UserProfileUpdateRequest
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database.db import get_db

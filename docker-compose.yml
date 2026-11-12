@@ -33,7 +33,7 @@ services:
       postgres_db:
         condition: service_healthy
     volumes:
-      - ./backend:/app
+      - ./backend:/app:z
 
 volumes:
   pgdata:

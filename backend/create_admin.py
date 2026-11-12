@@ -3,10 +3,10 @@ from getpass import getpass
 
 from sqlalchemy.exc import IntegrityError
 
-from database.db import SessionLocal
-from models.models import User, UserType
-from repositories.user_repository import get_user_by_email
-from services.auth_service import hash_password
+from src.database.db import SessionLocal
+from src.models.models import User, UserType
+from src.repositories.user_repository import get_user_by_email
+from src.services.auth_service import hash_password
 
 
 def main():

@@ -8,6 +8,7 @@ try:
     from src.views.main_layout import MainLayoutView
     from src.views.create_order import CreateOrderView
     from src.views.registered_customer import RegisteredCustomerView
+    from src.views.modify_user import ModifyUserView
 except ModuleNotFoundError as error:
     sys.exit(
         f"Hiányzó csomag: {error.name}\n\n"

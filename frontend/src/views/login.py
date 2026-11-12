@@ -1,12 +1,14 @@
+# src/views/login.py
 import customtkinter as ctk
-from src.api.auth_api import AuthAPI
+from src.api.session import auth_api
 
 class LoginView(ctk.CTkFrame):
     def __init__(self, master, controller):
         super().__init__(master)
 
         self.controller = controller
-        self.api = AuthAPI()
+        # Közös példány: a token itt tárolódik el, és a többi nézet is ezt használja
+        self.api = auth_api
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(6, weight=1)
@@ -14,7 +16,7 @@ class LoginView(ctk.CTkFrame):
         self.grid_columnconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         self.grid_columnconfigure(2, weight=1)
-        
+
 
         self.email = ctk.CTkEntry(self, placeholder_text="Email", height=40)
         self.email.grid(row=1, column=1, padx=10, pady=5, sticky="nsew")
@@ -36,6 +38,11 @@ class LoginView(ctk.CTkFrame):
         self.register_link.grid(row=5, column=1, padx=10, pady=(0, 10), sticky="n")
 
         self.password.bind("<Return>", lambda event: self.login())
+
+    def clear_fields(self):
+        self.email.delete(0, "end")
+        self.password.delete(0, "end")
+        self.error_label.configure(text="")
 
     def login(self):
         email = self.email.get().strip()
