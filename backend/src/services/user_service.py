@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
-from src.models.models import User
-from src.repositories import user_repository
-from src.services import auth_service
+from models.models import User
+from repositories import user_repository
+from services import auth_service
 
 def get_user_list(db: Session):
 
