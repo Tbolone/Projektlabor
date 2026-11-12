@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from models.models import Contact, Package, User
 
 class OrderService:
@@ -51,3 +51,30 @@ class OrderService:
             "tracking_id": str(new_package.tracking_id),
             "package_id": new_package.id
         }
+
+
+    @staticmethod
+    def get_all_packages(db: Session):
+        """Lekérdezi az összes csomagot az adatbázisból a kapcsolatokkal együtt."""
+        return db.query(Package).all() 
+
+
+    @staticmethod
+    def get_package_by_id(db: Session, package_id: int):
+        """Lekérdez egy adott csomagot ID alapján, beöltve a kapcsolódó kontaktokat és usereket is."""
+        package = (
+            db.query(Package)
+            .options(
+                joinedload(Package.pickup_contact),
+                joinedload(Package.delivery_contact),
+                joinedload(Package.sender),
+                joinedload(Package.receiver)
+            )
+            .filter(Package.id == package_id)
+            .first()
+        )
+        
+        if not package:
+            raise HTTPException(status_code=404, detail=f"A(z) {package_id} azonosítójú csomag nem található.")
+        
+        return package

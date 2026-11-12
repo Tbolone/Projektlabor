@@ -4,6 +4,8 @@ from src.api.session import logout
 from src.views.create_order import CreateOrderView
 from src.views.modify_user import ModifyUserView
 from src.views.registered_customer import RegisteredCustomerView
+from src.views.package_list import PackageListView
+from src.views.package_detail import PackageDetailView
 
 
 class MainLayoutView(ctk.CTkFrame):
@@ -13,6 +15,7 @@ class MainLayoutView(ctk.CTkFrame):
     MENU_ITEMS = [
         ("🏠  Kezdőlap", "home", RegisteredCustomerView),
         ("📦  Csomagfeladás", "create_order", CreateOrderView),
+        ("📋  Csomagok listája", "package_list", PackageListView),
     ]
 
     # (világos téma, sötét téma)
@@ -142,3 +145,21 @@ class MainLayoutView(ctk.CTkFrame):
         # Példányosítjuk a kívánt nézetet a content kereten belül
         current_view = view_class(self.content)
         current_view.grid(row=0, column=0, sticky="nsew")
+
+    def load_package_list(self):
+        """Betölti a csomagok listáját a jobb oldalra."""
+        self._clear_content()
+        view = PackageListView(self.content, controller=self.controller)
+        view.grid(row=0, column=0, sticky="nsew")
+
+    def load_package_detail(self, package_id):
+        """Betölti a csomag részletek nézetet a kapott ID alapján."""
+        self._clear_content()
+        view = PackageDetailView(self.content, package_id=package_id, controller=self.controller)
+        view.grid(row=0, column=0, sticky="nsew")
+
+    def _clear_content(self):
+        """Törli a jobb oldali tartalom keretben lévő aktuális widgeteket."""
+        for widget in self.content.winfo_children():
+            widget.destroy()
+  
