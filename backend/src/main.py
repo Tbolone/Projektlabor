@@ -1,9 +1,9 @@
 import uvicorn
 from fastapi import FastAPI
 
-from src import auth_router, user_router
-from src.database.db import Base, engine
-
+import auth_router, user_router
+from database.db import Base, engine
+from order_router import router as order_router
 
 
 app = FastAPI(title="Projekt Backend API")
@@ -11,6 +11,7 @@ app = FastAPI(title="Projekt Backend API")
 # Routerek becsatolása
 app.include_router(auth_router.router)
 app.include_router(user_router.router)
+app.include_router(order_router)
 
 @app.get("/")
 def root():

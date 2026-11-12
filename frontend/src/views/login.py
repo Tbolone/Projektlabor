@@ -50,7 +50,7 @@ class LoginView(ctk.CTkFrame):
                 success, data = self.api.get_current_user()
                 if success:
                     if data["type"] == "registered customer":
-                        self.controller.show_view("registered_customer")
+                        self.controller.show_view("main_layout")
                 else:
                     self.controller.show_view("home")
             else:

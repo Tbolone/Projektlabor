@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from src.models.models import User
+from models.models import User
 
 def get_user_list(db: Session):
 

@@ -5,6 +5,8 @@ try:
     from src.views.login import LoginView
     from src.views.home import HomeView
     from src.views.register import RegisterView
+    from src.views.main_layout import MainLayoutView
+    from src.views.create_order import CreateOrderView
     from src.views.registered_customer import RegisteredCustomerView
 except ModuleNotFoundError as error:
     sys.exit(
@@ -47,6 +49,9 @@ class App(ctk.CTk):
 app = App({"login": LoginView,
            "home": HomeView,
            "register": RegisterView,
-           "registered_customer": RegisteredCustomerView})
+           "main_layout": MainLayoutView,
+           "registered_customer": RegisteredCustomerView,
+           "create_order": CreateOrderView
+           })
 
 app.mainloop()
