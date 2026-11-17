@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from src.api.base_api import BaseAPI
+from src.api.order_api import OrderAPI
 
 class CreateOrderView(ctk.CTkFrame):
     """A 'Create Order' (Csomagfeladás) menüpontra betöltődő űrlap nézet."""
@@ -119,18 +119,13 @@ class CreateOrderView(ctk.CTkFrame):
 
         print("Küldés a szerverre...", data)
 
-        # Példányosítjuk a BaseAPI-t token nélkül, majd elküldjük a kérést és bezárjuk
-        api = BaseAPI()
+        api = OrderAPI()
         try:
-            response = api.client.post("/orders/", json=data)
-            
-            if response.status_code in (200, 201):
-                result = response.json()
-                print("Sikeres mentés!", result)
-            else:
-                print(f"Hiba történt a szerveren! Státusz: {response.status_code}, Válasz: {response.text}")
-                
-        except Exception as e:
-            print(f"Hiba a kérés küldése során: {e}")
+            ok, result = api.create_order(data)
         finally:
             api.close()
+
+        if ok:
+            print("Sikeres mentés!", result)
+        else:
+            print(f"Hiba történt: {result}")
