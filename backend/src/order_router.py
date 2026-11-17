@@ -1,8 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
+from models.models import User
 from sqlalchemy.orm import Session
 from database.db import get_db
 from schemas.order import OrderCreateRequest, PackageResponseSchema
 from services.order_service import OrderService
+from deps import get_current_user
+
 from typing import List
 router = APIRouter(prefix="/orders", tags=["Orders"])
 
@@ -10,14 +13,14 @@ router = APIRouter(prefix="/orders", tags=["Orders"])
 def create_new_order(
     order_data: OrderCreateRequest, 
     db: Session = Depends(get_db),
-    # current_user: User = Depends(get_current_active_user) # Ide jöhet a JWT auth user függőség
+    current_user: User = Depends(get_current_user)
 ):
-    
     try:
-        current_user_id = 1  
-        
-        result = OrderService.create_order(db=db, order_data=order_data, current_user_id=current_user_id)
-        return result
+        return OrderService.create_order(
+            db=db, order_data=order_data, current_user=current_user
+        )
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
         print(f"HIBA TÖRTÉNT A MENTÉS SORÁN: setError: {str(e)}")

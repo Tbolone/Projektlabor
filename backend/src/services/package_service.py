@@ -3,6 +3,7 @@ from datetime import date, datetime, timezone
 from fastapi import HTTPException, status
 from sqlalchemy import String, cast
 from sqlalchemy.orm import Session, joinedload
+from services import email_service
 
 from models.models import (
     Contact,
@@ -127,7 +128,6 @@ def list_packages(
 
     return query.order_by(Package.id.desc()).all()
 
-
 def add_event(
     db: Session,
     package: Package,
@@ -136,6 +136,7 @@ def add_event(
     comment: str | None = None,
     courier: Courier | None = None,
 ) -> PackageEvent:
+    old_status = package.current_status
     event = PackageEvent(
         package_id=package.id,
         actor_id=actor.user_id,
@@ -146,8 +147,12 @@ def add_event(
     )
     package.current_status = new_status
     db.add(event)
-    return event
 
+    # Feladáskor mindig, utána csak valódi állapotváltozáskor megy levél
+    if new_status == PackageStatus.CREATED or new_status != old_status:
+        email_service.queue_notification(db, package, new_status)
+
+    return event
 
 def ensure_transition(package: Package, new_status: PackageStatus) -> None:
     if package.current_status == new_status:

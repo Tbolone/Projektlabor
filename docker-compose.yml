@@ -27,13 +27,27 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
-    ports:
-      - "8000:8000"
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME}
     depends_on:
       postgres_db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
+    ports:
+      - "8000:8000"
     volumes:
       - ./backend:/app:z
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: projlab_mailpit
+    restart: always
+    ports:
+      - "8025:8025"
 
 volumes:
   pgdata:
