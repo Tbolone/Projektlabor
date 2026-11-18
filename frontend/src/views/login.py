@@ -7,6 +7,7 @@ from src.api.session import auth_api
 VIEW_BY_USER_TYPE = {
     "admin": "admin",
     "delivery_man": "courier",
+    "warehouse_staff": "warehouse",
     "registered customer": "main_layout",
 }
 

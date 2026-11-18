@@ -179,29 +179,7 @@ def list_packages(
 @router.get("/packages/{package_id}", response_model=PackageDetailResponse)
 def get_package(package_id: int, admin: AdminUser, db: Db):
     package = package_service.get_package(db, package_id)
-
-    events = (
-        db.query(PackageEvent)
-        .filter(PackageEvent.package_id == package.id)
-        .order_by(PackageEvent.timestamp.desc())
-        .all()
-    )
-
-    detail = PackageDetailResponse.model_validate(package)
-    detail.events = [
-        {
-            "id": event.id,
-            "timestamp": event.timestamp,
-            "status": event.status,
-            "comment": event.comment,
-            "actor_name": event.actor.name if event.actor else None,
-            "courier_name": event.courier.user.name
-            if event.courier and event.courier.user
-            else None,
-        }
-        for event in events
-    ]
-    return detail
+    return package_service.with_events(db, package)
 
 
 @router.post("/packages", response_model=PackageResponse, status_code=status.HTTP_201_CREATED)

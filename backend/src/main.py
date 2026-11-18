@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 
-import admin_router, auth_router, courier_router, user_router
+import admin_router, auth_router, courier_router, user_router, warehouse_router
 from database.db import Base, engine
 from order_router import router as order_router
 
@@ -13,6 +13,7 @@ app.include_router(auth_router.router)
 app.include_router(user_router.router)
 app.include_router(order_router)
 app.include_router(courier_router.router)
+app.include_router(warehouse_router.router)
 app.include_router(admin_router.router)
 
 @app.get("/")

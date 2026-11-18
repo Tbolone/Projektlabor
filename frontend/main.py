@@ -11,6 +11,7 @@ try:
     from src.views.modify_user import ModifyUserView
     from src.views.admin import AdminView
     from src.views.courier import CourierView
+    from src.views.warehouse import WarehouseView
 except ModuleNotFoundError as error:
     sys.exit(
         f"Hiányzó csomag: {error.name}\n\n"
@@ -61,7 +62,8 @@ app = App({"login": LoginView,
            "registered_customer": RegisteredCustomerView,
            "create_order": CreateOrderView,
            "admin": AdminView,
-           "courier": CourierView
+           "courier": CourierView,
+           "warehouse": WarehouseView
            })
 
 app.mainloop()

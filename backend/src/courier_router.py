@@ -162,27 +162,4 @@ def get_history(
 
 
 def _package_with_events(db: Session, package):
-    from models.models import PackageEvent
-
-    events = (
-        db.query(PackageEvent)
-        .filter(PackageEvent.package_id == package.id)
-        .order_by(PackageEvent.timestamp.desc())
-        .all()
-    )
-
-    detail = PackageDetailResponse.model_validate(package)
-    detail.events = [
-        {
-            "id": event.id,
-            "timestamp": event.timestamp,
-            "status": event.status,
-            "comment": event.comment,
-            "actor_name": event.actor.name if event.actor else None,
-            "courier_name": event.courier.user.name
-            if event.courier and event.courier.user
-            else None,
-        }
-        for event in events
-    ]
-    return detail
+    return package_service.with_events(db, package)
