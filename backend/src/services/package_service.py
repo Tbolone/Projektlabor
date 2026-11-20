@@ -148,7 +148,6 @@ def add_event(
     package.current_status = new_status
     db.add(event)
 
-    # Feladáskor mindig, utána csak valódi állapotváltozáskor megy levél
     if new_status == PackageStatus.CREATED or new_status != old_status:
         email_service.queue_notification(db, package, new_status)
 
@@ -250,6 +249,34 @@ def change_status(
     db.commit()
     db.refresh(package)
     return package
+
+
+def with_events(db: Session, package: Package):
+    """Csomag + eseménytörténet a részletes nézethez."""
+    from schemas.package import PackageDetailResponse
+
+    events = (
+        db.query(PackageEvent)
+        .filter(PackageEvent.package_id == package.id)
+        .order_by(PackageEvent.timestamp.desc())
+        .all()
+    )
+
+    detail = PackageDetailResponse.model_validate(package)
+    detail.events = [
+        {
+            "id": event.id,
+            "timestamp": event.timestamp,
+            "status": event.status,
+            "comment": event.comment,
+            "actor_name": event.actor.name if event.actor else None,
+            "courier_name": event.courier.user.name
+            if event.courier and event.courier.user
+            else None,
+        }
+        for event in events
+    ]
+    return detail
 
 
 def can_customer_modify(package: Package) -> bool:
